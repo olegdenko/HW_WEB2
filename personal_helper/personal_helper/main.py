@@ -8,6 +8,7 @@ from clean import sort_main
 from note_book import NoteBook, NoteRecord, Note, Tag
 from datetime import datetime
 import re
+from logger import get_logger
 
 from rich import print
 from rich import box
@@ -44,9 +45,9 @@ def main():
     print("[white]Run >> [/white][bold red]help[/bold red] - list of the commands")
     load_phoneDB(path_book)
 
-    while True:
+    while True:      
         cmd = ui.run()  # Запускаємо інтерфейс і отримуємо введену команду
-
+        logger = get_logger(__name__)
         # 2. Виконуємо розбір командної строки
         cmd, prm = parcer_commands(cmd)
 
@@ -54,13 +55,15 @@ def main():
         if cmd:
             handler = get_handler(cmd)
         else:
-            print("Command was not recognized")
+            logger.error("Command was not recognized")
+            # print("Command was not recognized")
             continue
 
-        if cmd in ["add", "phone", "add phone",  # "del phone", "change birthday", "change phone",
+        if cmd in ["add", "phone", "add phone",
                    "show book", "birthday", "search",
                    "close", "exit", "good bye",
-                   "show all", "hello", "cls", "help", "help sort", "help note", "help contact", "remove", "change", "add email", "add address", "add birthday",
+                   "show all", "hello", "cls", "help", "help sort", "help note",
+                    "help contact", "remove", "change", "add email", "add address", "add birthday",
                    "note add", "note change", "note del",
                    "note find", "note show", "note sort", "sort"]:
             result = handler(prm)
@@ -78,6 +81,7 @@ def main():
             
 # Декоратор для Обробки командної строки
 def input_error(func):
+    logger = get_logger(__name__)
     def inner(prm):
         try:
             result = func(prm) # handler()
@@ -101,7 +105,7 @@ def input_error(func):
         except KeyboardInterrupt:
             func_exit(_)
         except TypeError:
-            print("Incorect data")
+            logger.error("Incorrect data")
     return inner
 
 
