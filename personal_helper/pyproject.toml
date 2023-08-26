@@ -1,12 +1,13 @@
 [tool.poetry]
 name = "personal-helper"
-version = "0.1.0"
+version = "0.2.1"
 description = ""
 authors = ["Denko <officedenko@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
+rich = "^13.5.2"
 
 
 [tool.poetry.group.dev.dependencies]
