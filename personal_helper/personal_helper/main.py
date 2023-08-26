@@ -1,9 +1,8 @@
 from pathlib import Path
 import os
-import sys
 import platform  # для clearscrean()
 from RecordBook import AddressBook, Record, Name, Phone, Email, Birthday, Address, PhoneException, BirthdayException, EmailException
-from RecordBook import AbstractUI, ConsoleUI
+from RecordBook import ConsoleUI
 from clean import sort_main
 from note_book import NoteBook, NoteRecord, Note, Tag
 from datetime import datetime
@@ -63,7 +62,8 @@ def main():
                    "show book", "birthday", "search",
                    "close", "exit", "good bye",
                    "show all", "hello", "cls", "help", "help sort", "help note",
-                    "help contact", "remove", "change", "add email", "add address", "add birthday",
+                    "help contact", "remove", "change", "add email", "add address", 
+                     "add birthday",
                    "note add", "note change", "note del",
                    "note find", "note show", "note sort", "sort"]:
             result = handler(prm)
@@ -77,19 +77,21 @@ def main():
             print("Good bye!")
             break
 
-#------------------------------------------------------------------
-            
+# ------------------------------------------------------------------
 # Декоратор для Обробки командної строки
-def input_error(func):
+
+
+def input_error(func):    
     logger = get_logger(__name__)
+
     def inner(prm):
         try:
-            result = func(prm) # handler()
-            if not result == "Good bye!": 
-                print(result)      # ПЕЧАТЬ всіх Message від всіх функцій обробників
-            else: return result   
-        
-        # Обробка виключних ситуацій
+            result = func(prm)  # handler()
+            if not result == "Good bye!":
+                print(result)   # ПЕЧАТЬ всіх Message від всіх функцій
+            else:
+                return result
+# Обробка виключних ситуацій
         except BirthdayException as e:
             print(e)
         except PhoneException as e:
@@ -108,18 +110,19 @@ def input_error(func):
             logger.error("Incorrect data")
     return inner
 
-
 # Повертає адресу функції, що обробляє команду користувача
+
+
 def get_handler(operator):
-    return OPERATIONS[operator]    
+    return OPERATIONS[operator]
 
 
-#=========================================================
+# =========================================================
 # Блок функцій для роботи з нотатками
-#=========================================================
+# =========================================================
 # >> note add <текст нотатки будь-якої довжини> <teg-ключове слово> 
 # example >> note add My first note in this bot. #Note
-#=========================================================
+# =========================================================
 @input_error
 def note_add(args):
     if args.rfind("#"):
@@ -139,17 +142,17 @@ def note_add(args):
 @input_error
 def note_del(args):
     key = args.strip()
-    rec : NoteRecord = note_book.get(key)
+    rec: NoteRecord = note_book.get(key)
     try:
         return note_book.del_record(rec)
     except KeyError:
         return f"Record {key} does not exist."
-            
 
-#=========================================================
+
+# =========================================================
 # >> note change <key-record> <New notes> <tag>
 # example >> note change 1691245959.0 My new notes. #Tag 
-#=========================================================
+# =========================================================
 @input_error
 def note_change(args):
     n = args.find(" ")
@@ -164,18 +167,17 @@ def note_change(args):
     else:
         note = Note(args[n+1:m])
         tag = Tag(args[m:])
-    rec : NoteRecord = note_book.get(key)
+    rec: NoteRecord = note_book.get(key)
     if rec:
         return rec.change_note(rec.note.value, note if note else rec.note.value, tag if tag else rec.tag.value)
     else:
         return f"Record does not exist"
     
-
-#=========================================================
+# =========================================================
 # >> note find <fragment>
 # Фрагмент має бути однією фразою без пробілів
 # example >> note find word
-#=========================================================
+# =========================================================
 @input_error
 def note_find(args):
     return note_book.find_note(args)
